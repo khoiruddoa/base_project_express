@@ -1,21 +1,30 @@
 'use strict';
 
+// import fs from "fs";
+// import path from "path";
+// import process from "process";
+// import Sequelize from "sequelize";
+// import config from __dirname + "/../config/config.json"
+
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
+const config = require(__dirname + './../config/js')[env];
 const db = {};
 
+// setup connection database
 let sequelize;
+
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
-//define model ke sequelize
+
+// define class model ke sequelize orm
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -26,6 +35,7 @@ fs
     db[model.name] = model;
   });
 
+// setup relationships
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
@@ -34,5 +44,7 @@ Object.keys(db).forEach(modelName => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+db.ROLES = ["user", "admin", "moderator"]
 
 module.exports = db;
